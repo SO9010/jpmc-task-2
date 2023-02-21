@@ -14,7 +14,7 @@ interface IProps {
  * Perspective library adds load to HTMLElement prototype.
  * This interface acts as a wrapper for Typescript compiler.
  */
-interface PerspectiveViewerElement {
+interface PerspectiveViewerElement extends HTMLElement {
   load: (table: Table) => void,
 }
 
@@ -32,7 +32,7 @@ class Graph extends Component<IProps, {}> {
 
   componentDidMount() {
     // Get element to attach the table from the DOM.
-    const elem: PerspectiveViewerElement = document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
+    const elem = document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
 
     const schema = {
       stock: 'string',
@@ -48,9 +48,21 @@ class Graph extends Component<IProps, {}> {
       // Load the `table` in the `<perspective-viewer>` DOM reference.
 
       // Add more Perspective configurations here.
+
+      // I got stuck here becuase i kept forgetting to put the speach marks on the inside of the square breakcets.
+
       elem.load(this.table);
+      elem.setAttribute('view', 'y_line'); // this the kind of graph wwe want to visulize the data with before we used grid but noew we use a contuinous graph which shows the y line
+      elem.setAttribute('column-pivots', '["stock"]'); // This allows us to distinguish two differetn types of stocks
+      elem.setAttribute('row-pivots', '["timestamp"]');
+      elem.setAttribute('columns', '["top_ask_price"]'); // this alows us to focus on a particuar part of the stocks data along the y axis
+      elem.setAttribute('aggregates',
+        '{"stock":"distinct_count", "top_ask_price":"avg", "top_bid_price":"avg", "timestamp":"distinct_count"}'); // This helps us handle the duplicated data
     }
   }
+
+
+
 
   componentDidUpdate() {
     // Everytime the data props is updated, insert the data into Perspective table
